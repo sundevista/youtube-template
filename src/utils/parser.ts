@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { moment } from 'obsidian';
 
 export function parseVideoId(url: string): string | null {
 	const regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;

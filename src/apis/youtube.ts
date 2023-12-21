@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { App, requestUrl } from 'obsidian';
 import { filterStringData, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
 import { YouTubeTemplatePluginSettings } from '../settings';
@@ -49,6 +48,7 @@ export async function getVideoData(
 			channelName: filterStringData(videoResponse.items[0].snippet.channelTitle),
 			subscribers: parseInt(channelsResponse.items[0].statistics.subscriberCount),
 			length: parseISODuration(videoResponse.items[0].contentDetails.duration),
+			//@ts-ignore
 			publishDate: moment(videoResponse.items[0].snippet.publishedAt).format('YYYY-MM-DD'),
 			thumbnail: thumbnailLink ?? '',
 			chapters: parseChapters(videoResponse.items[0].snippet.description).map(
@@ -56,6 +56,7 @@ export async function getVideoData(
 			),
 			hashtags: videoResponse.items[0].snippet.tags ?? [],
 			description: '',
+			//@ts-ignore
 			noteCreated: moment().format('YYYY-MM-DD, HH:mm'),
 			youtubeUrl: videoUrl,
 		};
