@@ -1,0 +1,32 @@
+.youtube-template-plugin .insert-template-modal__input input {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.youtube-template-plugin .insert-template-modal__button-container button {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.youtube-template-plugin .insert-template-modal__button-container .setting-item-info {
+	display: none;
+}
+
+.youtube-template-plugin .insert-template-modal__error-container {
+	color: red;
+}
+
+.youtube-template-plugin__template-textarea {
+	flex-direction: column;
+	gap: 10px;
+}
+
+.youtube-template-plugin__template-textarea .setting-item-info {
+	margin-right: 0;
+}
+
+.youtube-template-plugin__template-textarea .setting-item-control,
+.youtube-template-plugin__template-textarea .setting-item-control textarea {
+	width: 100%;
+	height: 200px;
+}
