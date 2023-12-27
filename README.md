@@ -1,6 +1,12 @@
 # YouTube Template
 
-![](assets/demo.gif)
+![cover image](https://github.com/sundevista/youtube-template/blob/master/assets/image_demo.png?raw=true)
+
+## Demo
+
+![demo GIF](https://github.com/sundevista/youtube-template/blob/master/assets/demo.gif?raw=true)
+
+## Description
 
 A plugin that will help you take notes on YouTube videos using a configurable template. It has a single command that takes a YouTube video URL and
 creates a note from it. You can choose the template folder, template, and format for chapters and hashtags.
