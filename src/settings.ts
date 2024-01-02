@@ -48,7 +48,7 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 			);
 
 		const rootFolder = this.app.vault.getAbstractFileByPath('/') as TFolder;
-		const folders: TFolder[] = getAllTFolders(rootFolder);
+		const folders = getAllTFolders(rootFolder);
 		const folderOptions = Object.fromEntries(folders.map((folder) => [folder.path, folder.path]));
 
 		new Setting(containerEl)
