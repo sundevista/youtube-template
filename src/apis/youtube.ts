@@ -1,4 +1,4 @@
-import { App, requestUrl } from 'obsidian';
+import { App, TFolder, requestUrl } from 'obsidian';
 import { filterStringData, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
 import { YouTubeTemplatePluginSettings } from '../settings';
 import { VideoData } from '../types/video-data';
@@ -75,8 +75,9 @@ export async function downloadVideoThumbnail(app: App, imageUrl: string): Promis
 	const response = await requestUrl(imageUrl);
 
 	const filename = `${new Date().getTime()}.${imageUrl.split('.').pop()}`;
+	const abstractFile = this.app.vault.getAbstractFileByPath(app.vault.getConfig('attachmentFolderPath'));
 
-	if (!this.app.vault.getAbstractFileByPath(app.vault.getConfig('attachmentFolderPath'))) {
+	if (!(abstractFile instanceof TFolder)) {
 		throw new Error(`Attachment folder '${app.vault.getConfig('attachmentFolderPath')}' does not exist`);
 	}
 

@@ -1,7 +1,7 @@
-import { TAbstractFile, TFile, TFolder } from 'obsidian';
+import { App, TAbstractFile, TFile, TFolder } from 'obsidian';
 
-export function findTFile(filepath: string): TFile | null {
-	const abstractFile = this.app.vault.getAbstractFileByPath(filepath);
+export function findTFile(filepath: string, app: App): TFile | null {
+	const abstractFile = app.vault.getAbstractFileByPath(filepath);
 
 	return abstractFile instanceof TFile ? abstractFile : null;
 }

@@ -37,12 +37,12 @@ export class InsertTemplateModal extends Modal {
 			const filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
 
 			// Check if the file already exists
-			if (findTFile(filepath)) {
+			if (findTFile(filepath, this.app)) {
 				new Notice(`File ${filepath} already exists`);
 			} else {
 				await this.app.vault.create(filepath, processTemplate(data, this.plugin.settings));
 
-				const abstractFile = findTFile(filepath);
+				const abstractFile = findTFile(filepath, this.app);
 				if (abstractFile) {
 					this.app.workspace.getLeaf().openFile(abstractFile);
 				} else {
