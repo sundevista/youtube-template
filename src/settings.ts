@@ -60,7 +60,10 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				dropdown
 					.addOptions(folderOptions)
 					.setValue(this.plugin.settings.folder)
-					.onChange((value) => (this.plugin.settings.folder = value)),
+					.onChange((value) => {
+						this.plugin.settings.folder = value;
+						this.plugin.saveSettings()
+					}),
 			);
 
 		new Setting(containerEl)
@@ -70,7 +73,10 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				text
 					.setPlaceholder(DEFAULT_CHAPTER_FORMAT)
 					.setValue(this.plugin.settings.chapterFormat)
-					.onChange((value) => (this.plugin.settings.chapterFormat = value)),
+					.onChange((value) => {
+						this.plugin.settings.chapterFormat = value;
+						this.plugin.saveSettings()
+					}),
 			);
 
 		new Setting(containerEl)
@@ -80,18 +86,24 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				text
 					.setPlaceholder(DEFAULT_HASHTAG_FORMAT)
 					.setValue(this.plugin.settings.hashtagFormat)
-					.onChange((value) => (this.plugin.settings.hashtagFormat = value)),
+					.onChange((value) => {
+						this.plugin.settings.hashtagFormat = value;
+						this.plugin.saveSettings()
+					}),
 			);
 
 		new Setting(containerEl)
 			.setName('Template')
 			.setDesc(
 				'Make the template that will be used to create the note. You can use the following variables: {{title}}, ' +
-					'{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}}, {{chapters}}, {{hashtags}}, ' +
-					'{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
+				'{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}}, {{chapters}}, {{hashtags}}, ' +
+				'{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
 			)
 			.addTextArea((text) =>
-				text.setValue(this.plugin.settings.template).onChange((value) => (this.plugin.settings.template = value)),
+				text.setValue(this.plugin.settings.template).onChange((value) => {
+					this.plugin.settings.template = value;
+					this.plugin.saveSettings()
+				}),
 			)
 			.setClass('youtube-template-plugin__template-textarea');
 	}
