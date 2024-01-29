@@ -60,9 +60,9 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				dropdown
 					.addOptions(folderOptions)
 					.setValue(this.plugin.settings.folder)
-					.onChange((value) => {
+					.onChange(async (value) => {
 						this.plugin.settings.folder = value;
-						this.plugin.saveSettings()
+						await this.plugin.saveSettings();
 					}),
 			);
 
@@ -73,9 +73,9 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				text
 					.setPlaceholder(DEFAULT_CHAPTER_FORMAT)
 					.setValue(this.plugin.settings.chapterFormat)
-					.onChange((value) => {
+					.onChange(async (value) => {
 						this.plugin.settings.chapterFormat = value;
-						this.plugin.saveSettings()
+						await this.plugin.saveSettings();
 					}),
 			);
 
@@ -86,9 +86,9 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				text
 					.setPlaceholder(DEFAULT_HASHTAG_FORMAT)
 					.setValue(this.plugin.settings.hashtagFormat)
-					.onChange((value) => {
+					.onChange(async (value) => {
 						this.plugin.settings.hashtagFormat = value;
-						this.plugin.saveSettings()
+						await this.plugin.saveSettings();
 					}),
 			);
 
@@ -100,9 +100,9 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
 				'{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
 			)
 			.addTextArea((text) =>
-				text.setValue(this.plugin.settings.template).onChange((value) => {
+				text.setValue(this.plugin.settings.template).onChange(async (value) => {
 					this.plugin.settings.template = value;
-					this.plugin.saveSettings()
+					await this.plugin.saveSettings();
 				}),
 			)
 			.setClass('youtube-template-plugin__template-textarea');
