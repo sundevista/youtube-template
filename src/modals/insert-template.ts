@@ -102,7 +102,7 @@ export class InsertTemplateModal extends Modal {
 		const buttonContainer = contentEl.createDiv({ cls: 'insert-template-modal__button-container' });
 		contentEl.appendChild(buttonContainer);
 
-		new Setting(buttonContainer).addButton((btn) => btn.setButtonText('Insert').setCta().onClick(this.onSubmitClick));
+		new Setting(buttonContainer).addButton((btn) => btn.setButtonText('Insert (or press Enter)').setCta().onClick(this.onSubmitClick));
 
 		const errorContainer = contentEl.createDiv({
 			cls: 'insert-template-modal__error-container',
