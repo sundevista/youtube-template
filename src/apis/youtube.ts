@@ -1,5 +1,5 @@
 import { App, TFolder, requestUrl } from 'obsidian';
-import { filterStringData, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
+import { filterStringData, parseAttachmentFolder, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
 import { YouTubeTemplatePluginSettings } from '../settings';
 import { VideoData } from '../types/video-data';
 import { ChannelListResponse, VideoListResponse } from '../types/youtube-response';
@@ -32,7 +32,7 @@ export async function getVideoData(
 
 		const channelsResponse: ChannelListResponse = await requestUrl(
 			baseUrlForChannels +
-				`part=statistics&id=${videoResponse.items[0].snippet.channelId}&key=${settings.googleCloudApiKey}`,
+			`part=statistics&id=${videoResponse.items[0].snippet.channelId}&key=${settings.googleCloudApiKey}`,
 		).json;
 
 		if (channelsResponse.items.length === 0) {
@@ -75,10 +75,10 @@ export async function downloadVideoThumbnail(app: App, imageUrl: string): Promis
 	const response = await requestUrl(imageUrl);
 
 	const filename = `${new Date().getTime()}.${imageUrl.split('.').pop()}`;
-	const abstractFile = this.app.vault.getAbstractFileByPath(app.vault.getConfig('attachmentFolderPath'));
+	const abstractFile = this.app.vault.getAbstractFileByPath(parseAttachmentFolder(app.vault.getConfig('attachmentFolderPath')));
 
 	if (!(abstractFile instanceof TFolder)) {
-		throw new Error(`Attachment folder '${app.vault.getConfig('attachmentFolderPath')}' does not exist`);
+		throw new Error(`Attachment folder '${app.vault.getConfig('attachmentFolderPath')}' does not exist. Check if the folder path is correct in your Settings → Files and links → Default location for new attachments.`);
 	}
 
 	await app.vault.createBinary(`${app.vault.getConfig('attachmentFolderPath')}/${filename}`, response.arrayBuffer);

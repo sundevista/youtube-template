@@ -5,6 +5,7 @@ export function parseVideoId(url: string): string | null {
 	const result = regex.exec(url);
 	return result ? result[3] : null;
 }
+
 export function parseChapters(description: string): {
 	timestamp: string;
 	title: string;
@@ -33,13 +34,29 @@ export function parseChapters(description: string): {
 
 	return chapters;
 }
+
 export function parseISODuration(data: string): string {
 	const duration = moment.duration(data);
 	return `${duration.hours() > 0 ? duration.hours() + ':' : ''}${duration.minutes()}:${duration.seconds()}`;
 }
+
 export function filterFilename(text: string): string {
 	return text.replace(/[/\\?%*:|"<>]/g, '');
 }
+
 export function filterStringData(text: string): string {
 	return text.replace(/"(.*?)"/g, '«$1»').replace(/["]/g, '');
+}
+
+
+/**
+ * Parses the attachment folder path. If folder starts with a dot or is empty, it will be replaced with a root folder.
+ * 
+ * @param folder - The folder path to parse.
+ * @returns The parsed folder path.
+ */
+export function parseAttachmentFolder(folder: string): string {
+	folder = folder.trim();
+	folder = folder.startsWith('.') ? folder.replace('.', '') : folder;
+	return folder === '' ? '/' : folder;
 }
