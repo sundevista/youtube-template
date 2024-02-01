@@ -2,7 +2,7 @@ import { App, TFolder, requestUrl } from 'obsidian';
 import { filterStringData, parseAttachmentFolder, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
 import { YouTubeTemplatePluginSettings } from '../settings';
 import { VideoData } from '../types/video-data';
-import { ChannelListResponse, VideoListResponse } from '../types/youtube-response';
+import { ChannelListResponse, Thumbnail, VideoListResponse } from '../types/youtube-response';
 import {
 	NO_CHANNEL_ERROR,
 	NO_INTERNET_CATCHING_ERROR,
@@ -39,8 +39,13 @@ export async function getVideoData(
 			throw new Error(NO_CHANNEL_ERROR);
 		}
 
-		if (downloadThumbnail)
-			thumbnailLink = (await downloadVideoThumbnail(this.app, videoResponse.items[0].snippet.thumbnails.maxres.url)) ?? '';
+		console.log(videoResponse);
+		console.log(channelsResponse);
+
+		if (downloadThumbnail) {
+			const thumbnails = videoResponse.items[0].snippet.thumbnails;
+			thumbnailLink = (await downloadVideoThumbnail(this.app, Object.values(videoResponse.items[0].snippet.thumbnails))) ?? '';
+		}
 
 		return {
 			id: videoResponse.items[0].id,
@@ -71,7 +76,17 @@ export async function getVideoData(
 	}
 }
 
-export async function downloadVideoThumbnail(app: App, imageUrl: string): Promise<string | undefined> {
+export async function downloadVideoThumbnail(app: App, availableThumbnaisl: Thumbnail[]): Promise<string | undefined> {
+	let bestThumbnailIdx = 0;
+
+	for (let i = 1; i < availableThumbnaisl.length; i++) {
+		if (availableThumbnaisl[i].width > availableThumbnaisl[bestThumbnailIdx].width) {
+			bestThumbnailIdx = i;
+		}
+	}
+
+	const imageUrl = availableThumbnaisl[bestThumbnailIdx].url;
+
 	const response = await requestUrl(imageUrl);
 
 	const filename = `${new Date().getTime()}.${imageUrl.split('.').pop()}`;
