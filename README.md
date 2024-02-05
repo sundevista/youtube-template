@@ -11,6 +11,13 @@
 A plugin that will help you take notes on YouTube videos using a configurable template. It has a single command that takes a YouTube video URL and
 creates a note from it. You can choose the template folder, template, and format for chapters and hashtags.
 
+## Roadmap (features of the next 1.1.0 release)
+
+- [ ] Template for a file name (alongside with the ability to set folder location).
+- [ ] Folder creator (add an option to create an attachment folder if it doesn't exist and create a folder from the file name template).
+- [ ] Template file instead of a settings textarea (it will be easier to use the Templater plugin for advanced users).
+- [ ] New {{thumbnailUrl}} field to allow you to use image URLs instead of downloading them.
+
 ## Receiving API key
 
 To make this plugin work, you need to paste your Google Cloud API key to be able to access the YouTube Data API. To do so, you need to create a
