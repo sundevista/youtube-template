@@ -9,111 +9,117 @@ import { processTemplate } from '../utils/templater';
 const errorContainerId = 'insert-template-modal__error';
 
 export class InsertTemplateModal extends Modal {
-	private videoUrl = '';
-	private plugin: YoutubeTemplatePlugin;
+  private videoUrl = '';
+  private plugin: YoutubeTemplatePlugin;
 
-	constructor(app: App, plugin: YoutubeTemplatePlugin) {
-		super(app);
-		this.plugin = plugin;
-	}
+  constructor(app: App, plugin: YoutubeTemplatePlugin) {
+    super(app);
+    this.plugin = plugin;
+  }
 
-	onSubmitClick = async () => {
-		if (this.videoUrl.length < 11) {
-			this.setErrorMessage(this.contentEl, 'Please enter a valid URL (should be at least 11 characters)');
-			return;
-		}
+  onSubmitClick = async () => {
+    if (this.videoUrl.length < 11) {
+      this.setErrorMessage(this.contentEl, 'Please enter a valid URL (should be at least 11 characters)');
+      return;
+    }
 
-		// Get the video data from youtube APIs
-		try {
-			const downloadVideoThumbnail = this.plugin.settings.template.contains('{{thumbnail}}');
+    // Get the video data from youtube APIs
+    try {
+      const downloadVideoThumbnail = this.plugin.settings.template.contains('{{thumbnail}}');
 
-			const data = await getVideoData(this.videoUrl, this.plugin.settings, downloadVideoThumbnail);
+      const data = await getVideoData(this.videoUrl, this.plugin.settings, downloadVideoThumbnail);
 
-			if (!this.app.vault.getAbstractFileByPath(this.plugin.settings.folder)) {
-				throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
-			}
+      if (!this.app.vault.getAbstractFileByPath(this.plugin.settings.folder)) {
+        if (this.plugin.settings.createPaths) {
+          await this.app.vault.createFolder(this.plugin.settings.folder);
+        }
 
-			// Create a new file with the title of the video
-			const filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
+        throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
+      }
 
-			// Check if the file already exists
-			if (findTFile(filepath, this.app)) {
-				new Notice(`File ${filepath} already exists`);
-			} else {
-				await this.app.vault.create(filepath, processTemplate(data, this.plugin.settings));
+      // Create a new file with the title of the video
+      const filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
 
-				const abstractFile = findTFile(filepath, this.app);
-				if (abstractFile) {
-					this.app.workspace.getLeaf().openFile(abstractFile);
-				} else {
-					new Notice(`Failed to create ${filepath}`);
-				}
-			}
+      // Check if the file already exists
+      if (findTFile(filepath, this.app)) {
+        new Notice(`File ${filepath} already exists`);
+      } else {
+        await this.app.vault.create(filepath, processTemplate(data, this.plugin.settings));
 
-			this.close();
-		} catch (error) {
-			switch (error?.message) {
-				case NO_VIDEO_ERROR:
-					this.setErrorMessage(this.contentEl, 'No video found with the given URL');
-					break;
-				case NO_CHANNEL_ERROR:
-					this.setErrorMessage(this.contentEl, 'No channel was found with the provided video URL');
-					break;
-				case NO_INTERNET_ERROR:
-					this.setErrorMessage(this.contentEl, 'Please check your internet connection');
-					break;
-				case WRONG_API_KEY_ERROR:
-					this.setErrorMessage(this.contentEl, 'Please check the API key in the settings');
-					break;
-				default:
-					this.setErrorMessage(this.contentEl, `Unexpected error: ${error?.message}`);
-					break;
-			}
-		}
-	};
+        const abstractFile = findTFile(filepath, this.app);
+        if (abstractFile) {
+          this.app.workspace.getLeaf().openFile(abstractFile);
+        } else {
+          new Notice(`Failed to create ${filepath}`);
+        }
+      }
 
-	onEnterKeyPressing = (e: KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			this.onSubmitClick();
-		}
-	};
+      this.close();
+    } catch (error) {
+      switch (error?.message) {
+        case NO_VIDEO_ERROR:
+          this.setErrorMessage(this.contentEl, 'No video found with the given URL');
+          break;
+        case NO_CHANNEL_ERROR:
+          this.setErrorMessage(this.contentEl, 'No channel was found with the provided video URL');
+          break;
+        case NO_INTERNET_ERROR:
+          this.setErrorMessage(this.contentEl, 'Please check your internet connection');
+          break;
+        case WRONG_API_KEY_ERROR:
+          this.setErrorMessage(this.contentEl, 'Please check the API key in the settings');
+          break;
+        default:
+          this.setErrorMessage(this.contentEl, `Unexpected error: ${error?.message}`);
+          break;
+      }
+    }
+  };
 
-	setErrorMessage = (contentEl: HTMLElement, message: string) => {
-		const errorContainer = contentEl.querySelector(`#${errorContainerId}`);
-		if (errorContainer) {
-			errorContainer.textContent = message;
-		}
-	};
+  onEnterKeyPressing = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      this.onSubmitClick();
+    }
+  };
 
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.classList.add('youtube-template-plugin');
+  setErrorMessage = (contentEl: HTMLElement, message: string) => {
+    const errorContainer = contentEl.querySelector(`#${errorContainerId}`);
+    if (errorContainer) {
+      errorContainer.textContent = message;
+    }
+  };
 
-		contentEl.createEl('h1', { text: '🔗 Insert Template' });
-		contentEl.addEventListener('keydown', this.onEnterKeyPressing);
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.classList.add('youtube-template-plugin');
 
-		contentEl.createDiv({ cls: 'insert-template-modal__input' }, (settingItem) => {
-			new TextComponent(settingItem)
-				.setValue(this.videoUrl)
-				.setPlaceholder('URL of the video')
-				.onChange((value) => (this.videoUrl = value));
-		});
+    contentEl.createEl('h1', { text: '🔗 Insert Template' });
+    contentEl.addEventListener('keydown', this.onEnterKeyPressing);
 
-		const buttonContainer = contentEl.createDiv({ cls: 'insert-template-modal__button-container' });
-		contentEl.appendChild(buttonContainer);
+    contentEl.createDiv({ cls: 'insert-template-modal__input' }, (settingItem) => {
+      new TextComponent(settingItem)
+        .setValue(this.videoUrl)
+        .setPlaceholder('URL of the video')
+        .onChange((value) => (this.videoUrl = value));
+    });
 
-		new Setting(buttonContainer).addButton((btn) => btn.setButtonText('Insert (or press Enter)').setCta().onClick(this.onSubmitClick));
+    const buttonContainer = contentEl.createDiv({ cls: 'insert-template-modal__button-container' });
+    contentEl.appendChild(buttonContainer);
 
-		const errorContainer = contentEl.createDiv({
-			cls: 'insert-template-modal__error-container',
-			attr: { id: errorContainerId },
-		});
-		contentEl.appendChild(errorContainer);
-	}
+    new Setting(buttonContainer).addButton((btn) =>
+      btn.setButtonText('Insert (or press Enter)').setCta().onClick(this.onSubmitClick),
+    );
 
-	onClose() {
-		const { contentEl } = this;
-		contentEl.removeEventListener('keydown', this.onEnterKeyPressing);
-		contentEl.empty();
-	}
+    const errorContainer = contentEl.createDiv({
+      cls: 'insert-template-modal__error-container',
+      attr: { id: errorContainerId },
+    });
+    contentEl.appendChild(errorContainer);
+  }
+
+  onClose() {
+    const { contentEl } = this;
+    contentEl.removeEventListener('keydown', this.onEnterKeyPressing);
+    contentEl.empty();
+  }
 }

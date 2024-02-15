@@ -55,7 +55,7 @@ export function getAttachmentFolder(app: App): string {
     if (attachentPath.length === 2) return '/';
 
     const activeFile = app.workspace.getActiveFile();
-    if (!activeFile) throw new Error("No active file, can't parse attachment folder");
+    if (!activeFile) throw new Error("No active file. Can't parse the path for the attachment folder.");
 
     let parentFolder = activeFile?.parent?.path;
     if (parentFolder?.startsWith('/')) parentFolder = parentFolder.substring(1);

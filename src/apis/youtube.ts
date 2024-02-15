@@ -38,8 +38,12 @@ export async function getVideoData(
       throw new Error(NO_CHANNEL_ERROR);
     }
     if (downloadThumbnail) {
-      const thumbnails = videoResponse.items[0].snippet.thumbnails;
-      thumbnailLink = (await downloadVideoThumbnail(this.app, Object.values(videoResponse.items[0].snippet.thumbnails))) ?? '';
+      thumbnailLink =
+        (await downloadVideoThumbnail(
+          this.app,
+          settings.createPaths,
+          Object.values(videoResponse.items[0].snippet.thumbnails),
+        )) ?? '';
     }
 
     return {
@@ -71,7 +75,11 @@ export async function getVideoData(
   }
 }
 
-export async function downloadVideoThumbnail(app: App, availableThumbnaisl: Thumbnail[]): Promise<string | undefined> {
+export async function downloadVideoThumbnail(
+  app: App,
+  createFolders: boolean,
+  availableThumbnaisl: Thumbnail[],
+): Promise<string | undefined> {
   let bestThumbnailIdx = 0;
 
   for (let i = 1; i < availableThumbnaisl.length; i++) {
@@ -89,9 +97,13 @@ export async function downloadVideoThumbnail(app: App, availableThumbnaisl: Thum
   const abstractFile = this.app.vault.getAbstractFileByPath(attachmentFolderPath);
 
   if (!(abstractFile instanceof TFolder)) {
-    throw new Error(
-      `Attachment folder '${attachmentFolderPath}' does not exist. Check if the folder path is correct in your Settings → Files and links → Default location for new attachments.`,
-    );
+    if (createFolders) {
+      await app.vault.createFolder(attachmentFolderPath);
+    } else {
+      throw new Error(
+        `Attachment folder '${attachmentFolderPath}' does not exist. Check if the folder path is correct in your Settings → Files and links → Default location for new attachments. Or you can turn on option 'Create folders' in the plugin settings.`,
+      );
+    }
   }
 
   await app.vault.createBinary(`${app.vault.getConfig('attachmentFolderPath')}/${filename}`, response.arrayBuffer);
