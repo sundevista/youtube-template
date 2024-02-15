@@ -19,7 +19,7 @@ export async function getVideoData(
   settings: YouTubeTemplatePluginSettings,
   downloadThumbnail: boolean,
 ): Promise<VideoData> {
-  let thumbnailLink = '';
+  let thumbnailFileLink = '';
 
   try {
     const videoResponse: VideoListResponse = await requestUrl(
@@ -37,8 +37,11 @@ export async function getVideoData(
     if (channelsResponse.items.length === 0) {
       throw new Error(NO_CHANNEL_ERROR);
     }
+
+    const thumbnailUrl = getBestThumbnailUrl(Object.values(videoResponse.items[0].snippet.thumbnails));
+
     if (downloadThumbnail) {
-      thumbnailLink =
+      thumbnailFileLink =
         (await downloadVideoThumbnail(
           this.app,
           settings.createPaths,
@@ -54,7 +57,8 @@ export async function getVideoData(
       length: parseISODuration(videoResponse.items[0].contentDetails.duration),
       //@ts-ignore
       publishDate: moment(videoResponse.items[0].snippet.publishedAt).format('YYYY-MM-DD'),
-      thumbnail: thumbnailLink ?? '',
+      thumbnail: thumbnailFileLink ?? '',
+      thumbnailUrl,
       chapters: parseChapters(videoResponse.items[0].snippet.description).map(
         (chapter) => `${chapter.timestamp} ${filterStringData(chapter.title)}`,
       ),
@@ -75,21 +79,24 @@ export async function getVideoData(
   }
 }
 
-export async function downloadVideoThumbnail(
-  app: App,
-  createFolders: boolean,
-  availableThumbnaisl: Thumbnail[],
-): Promise<string | undefined> {
+function getBestThumbnailUrl(availableThumbnails: Thumbnail[]): string {
   let bestThumbnailIdx = 0;
 
-  for (let i = 1; i < availableThumbnaisl.length; i++) {
-    if (availableThumbnaisl[i].width > availableThumbnaisl[bestThumbnailIdx].width) {
+  for (let i = 1; i < availableThumbnails.length; i++) {
+    if (availableThumbnails[i].width > availableThumbnails[bestThumbnailIdx].width) {
       bestThumbnailIdx = i;
     }
   }
 
-  const imageUrl = availableThumbnaisl[bestThumbnailIdx].url;
+  return availableThumbnails[bestThumbnailIdx].url;
+}
 
+export async function downloadVideoThumbnail(
+  app: App,
+  createFolders: boolean,
+  availableThumbnails: Thumbnail[],
+): Promise<string | undefined> {
+  const imageUrl = getBestThumbnailUrl(availableThumbnails);
   const response = await requestUrl(imageUrl);
 
   const filename = `${new Date().getTime()}.${imageUrl.split('.').pop()}`;

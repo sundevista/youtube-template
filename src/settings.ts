@@ -106,7 +106,8 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
       .setName('Template')
       .setDesc(
         'Make the template that will be used to create the note. You can use the following variables: {{title}}, ' +
-          '{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}}, {{chapters}}, {{hashtags}}, ' +
+          '{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}} (to download thumbnail, ' +
+          'file name will be returned), {{thumbnailUrl}} {{chapters}}, {{hashtags}}, ' +
           '{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
       )
       .addTextArea((text) =>
