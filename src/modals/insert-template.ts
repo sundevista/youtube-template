@@ -4,7 +4,7 @@ import { checkPathTemplate, filterFilename } from 'src/utils/parser';
 import { getVideoData } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
 import { NO_CHANNEL_ERROR, NO_INTERNET_ERROR, NO_VIDEO_ERROR, WRONG_API_KEY_ERROR } from '../utils/constants';
-import { processTemplate } from '../utils/templater';
+import { processPathTemplate, processTemplate } from '../utils/templater';
 
 const errorContainerId = 'insert-template-modal__error';
 
@@ -41,7 +41,7 @@ export class InsertTemplateModal extends Modal {
       let filepath;
       if (this.plugin.settings.usePathTemplate) {
         checkPathTemplate(this.plugin.settings.pathTemplate);
-        filepath = normalizePath(processTemplate(data, this.plugin.settings, true));
+        filepath = normalizePath(processPathTemplate(data, this.plugin.settings));
       } else {
         filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
       }
@@ -57,7 +57,9 @@ export class InsertTemplateModal extends Modal {
           await this.app.vault.createFolder(filepath.substring(0, filepath.lastIndexOf('/')));
         }
 
-        await this.app.vault.create(filepath, processTemplate(data, this.plugin.settings));
+        const dataToWrite = await processTemplate(data, this.plugin.settings, this.app);
+
+        await this.app.vault.create(filepath, dataToWrite);
 
         const abstractFile = findTFile(filepath, this.app);
         if (abstractFile) {

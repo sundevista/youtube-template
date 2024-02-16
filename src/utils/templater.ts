@@ -1,5 +1,7 @@
+import { App } from 'obsidian';
 import { YouTubeTemplatePluginSettings } from '../settings';
 import { VideoData } from '../types/video-data';
+import { findTFile } from './file';
 import { filterFilename } from './parser';
 
 function replaceAll(str: string, find: string, replace: string): string {
@@ -17,17 +19,31 @@ function processTemplateKey(key: string, videoData: VideoData, settings: YouTube
   }
 }
 
-export function processTemplate(videoData: VideoData, settings: YouTubeTemplatePluginSettings, usePathTemplate = false): string {
-  let template = usePathTemplate ? settings.pathTemplate : settings.template;
+export function processPathTemplate(videoData: VideoData, settings: YouTubeTemplatePluginSettings): string {
+  let template = settings.pathTemplate;
 
   Object.keys(videoData).forEach((key) => {
-    template = replaceAll(
-      template,
-      `{{${key}}}`,
-      usePathTemplate
-        ? filterFilename(processTemplateKey(key, videoData, settings))
-        : processTemplateKey(key, videoData, settings),
-    );
+    template = replaceAll(template, `{{${key}}}`, filterFilename(processTemplateKey(key, videoData, settings)));
+  });
+
+  return template;
+}
+
+export async function processTemplate(videoData: VideoData, settings: YouTubeTemplatePluginSettings, app: App): Promise<string> {
+  let template: string;
+
+  if (settings.useTemplateFile) {
+    const file = findTFile(settings.templateFile, app);
+
+    if (!file) throw new Error(`File '${settings.templateFile}' does not exist`);
+
+    template = await app.vault.read(file);
+  } else {
+    template = settings.template;
+  }
+
+  Object.keys(videoData).forEach((key) => {
+    template = replaceAll(template, `{{${key}}}`, processTemplateKey(key, videoData, settings));
   });
 
   return template;

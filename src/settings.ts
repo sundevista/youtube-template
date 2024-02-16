@@ -12,6 +12,8 @@ export interface YouTubeTemplatePluginSettings {
   createPaths: boolean;
   usePathTemplate: boolean;
   pathTemplate: string;
+  useTemplateFile: boolean;
+  templateFile: string;
 }
 
 export const DEFAULT_SETTINGS: YouTubeTemplatePluginSettings = {
@@ -23,6 +25,8 @@ export const DEFAULT_SETTINGS: YouTubeTemplatePluginSettings = {
   createPaths: true,
   usePathTemplate: false,
   pathTemplate: '',
+  useTemplateFile: false,
+  templateFile: '',
 };
 
 export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
@@ -143,5 +147,30 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
         }),
       )
       .setClass('youtube-template-plugin__template-textarea');
+
+    new Setting(containerEl)
+      .setName('Use template file')
+      .setDesc('Turn on if you want to use a file with a template to create the note instead of textarea above.')
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.useTemplateFile).onChange(async (value) => {
+          this.plugin.settings.useTemplateFile = value;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName('Template file')
+      .setDesc(
+        'File with template that will be used to create the note. You can use the following You can use the following variables: {{title}}, ' +
+          '{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}} (to download thumbnail, ' +
+          'file name will be returned), {{thumbnailUrl}} {{chapters}}, {{hashtags}}, ' +
+          '{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
+      )
+      .addText((text) =>
+        text.setValue(this.plugin.settings.templateFile).onChange(async (value) => {
+          this.plugin.settings.templateFile = value;
+          await this.plugin.saveSettings();
+        }),
+      );
   }
 }
