@@ -1,3 +1,7 @@
+<p>You can support my works at:</p>
+
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/sundevistax)
+
 # YouTube Template
 
 ![cover image](https://github.com/sundevista/youtube-template/blob/master/assets/image_demo.png?raw=true)
@@ -10,6 +14,13 @@
 
 A plugin that will help you take notes on YouTube videos using a configurable template. It has a single command that takes a YouTube video URL and
 creates a note from it. You can choose the template folder, template, and format for chapters and hashtags.
+
+## Roadmap (features of the next 1.1.0 release)
+
+- [ ] Template for a file name (alongside with the ability to set folder location).
+- [ ] Folder creator (add an option to create an attachment folder if it doesn't exist and create a folder from the file name template).
+- [ ] Template file instead of a settings textarea (it will be easier to use the Templater plugin for advanced users).
+- [ ] New {{thumbnailUrl}} field to allow you to use image URLs instead of downloading them.
 
 ## Receiving API key
 
