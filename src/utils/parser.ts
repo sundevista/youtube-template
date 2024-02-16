@@ -6,6 +6,16 @@ export function parseVideoId(url: string): string | null {
   return result ? result[3] : null;
 }
 
+export function checkPathTemplate(template: string): void {
+  if (template.startsWith('/')) {
+    throw new Error("You can't use '/' at the beginning of the path.");
+  }
+
+  if (!template.endsWith('.md')) {
+    throw new Error("The path template should end with '.md' extension.");
+  }
+}
+
 export function parseChapters(description: string): {
   timestamp: string;
   title: string;

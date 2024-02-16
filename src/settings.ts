@@ -10,6 +10,8 @@ export interface YouTubeTemplatePluginSettings {
   hashtagFormat: string;
   template: string;
   createPaths: boolean;
+  usePathTemplate: boolean;
+  pathTemplate: string;
 }
 
 export const DEFAULT_SETTINGS: YouTubeTemplatePluginSettings = {
@@ -19,6 +21,8 @@ export const DEFAULT_SETTINGS: YouTubeTemplatePluginSettings = {
   hashtagFormat: DEFAULT_HASHTAG_FORMAT,
   template: DEFAULT_TEMPLATE,
   createPaths: true,
+  usePathTemplate: false,
+  pathTemplate: '',
 };
 
 export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
@@ -54,8 +58,8 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
     const folderOptions = Object.fromEntries(folders.map((folder) => [folder.path, folder.path]));
 
     new Setting(containerEl)
-      .setName('Folder to save the templates')
-      .setDesc('Choose the folder where you want to save the templates. The default value is the root folder of your vault.')
+      .setName('Folder to save the notes')
+      .setDesc('Choose the folder where you want to save the notes. The default value is the root folder of your vault.')
       .addDropdown((dropdown) =>
         dropdown
           .addOptions(folderOptions)
@@ -64,6 +68,28 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
             this.plugin.settings.folder = value;
             await this.plugin.saveSettings();
           }),
+      );
+
+    new Setting(containerEl)
+      .setName('Use path template')
+      .setDesc('Turn on if you want to use a template for the path where you want to save the notes.')
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.usePathTemplate).onChange(async (value) => {
+          this.plugin.settings.usePathTemplate = value;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName('Path template')
+      .setDesc(
+        "Choose the path where you want to save the notes. You can use all keywords that are available in the template (like {{title}}, {{channelName}} etc) and make something like '/YouTube/{{channelName}}/{{title}}.md'.",
+      )
+      .addText((text) =>
+        text.setValue(this.plugin.settings.pathTemplate).onChange(async (value) => {
+          this.plugin.settings.pathTemplate = value;
+          await this.plugin.saveSettings();
+        }),
       );
 
     new Setting(containerEl)
@@ -79,7 +105,7 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Chapter format')
       .setDesc('Make the template that will be used to insert chapters. You can use the following variables: {{chapter}}.')
-      .addTextArea((text) =>
+      .addText((text) =>
         text
           .setPlaceholder(DEFAULT_CHAPTER_FORMAT)
           .setValue(this.plugin.settings.chapterFormat)

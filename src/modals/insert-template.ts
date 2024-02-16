@@ -1,6 +1,6 @@
 import { App, Modal, Notice, Setting, TextComponent, normalizePath } from 'obsidian';
 import { findTFile } from 'src/utils/file';
-import { filterFilename } from 'src/utils/parser';
+import { checkPathTemplate, filterFilename } from 'src/utils/parser';
 import { getVideoData } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
 import { NO_CHANNEL_ERROR, NO_INTERNET_ERROR, NO_VIDEO_ERROR, WRONG_API_KEY_ERROR } from '../utils/constants';
@@ -38,12 +38,25 @@ export class InsertTemplateModal extends Modal {
       }
 
       // Create a new file with the title of the video
-      const filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
+      let filepath;
+      if (this.plugin.settings.usePathTemplate) {
+        checkPathTemplate(this.plugin.settings.pathTemplate);
+        filepath = normalizePath(processTemplate(data, this.plugin.settings, true));
+      } else {
+        filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
+      }
 
       // Check if the file already exists
       if (findTFile(filepath, this.app)) {
         new Notice(`File ${filepath} already exists`);
       } else {
+        if (
+          this.plugin.settings.usePathTemplate &&
+          !this.app.vault.getAbstractFileByPath(filepath.contains('/') ? filepath.substring(0, filepath.lastIndexOf('/')) : '/')
+        ) {
+          await this.app.vault.createFolder(filepath.substring(0, filepath.lastIndexOf('/')));
+        }
+
         await this.app.vault.create(filepath, processTemplate(data, this.plugin.settings));
 
         const abstractFile = findTFile(filepath, this.app);
