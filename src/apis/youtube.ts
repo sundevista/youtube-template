@@ -1,5 +1,5 @@
 import { App, TFolder, requestUrl } from 'obsidian';
-import { filterStringData, getAttachmentFolder, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
+import { filterStringData, parseChapters, parseISODuration, parseVideoId } from 'src/utils/parser';
 import { YouTubeTemplatePluginSettings } from '../settings';
 import { VideoData } from '../types/video-data';
 import { ChannelListResponse, Thumbnail, VideoListResponse } from '../types/youtube-response';
