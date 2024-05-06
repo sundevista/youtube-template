@@ -87,7 +87,7 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Path template')
       .setDesc(
-        "Choose the path where you want to save the notes. You can use all keywords that are available in the template (like {{title}}, {{channelName}} etc) and make something like '/YouTube/{{channelName}}/{{title}}.md'.",
+        "Choose the path where you want to save the notes. You can use all keywords that are available in the template (like {{title}}, {{channelName}} etc) and make something like 'YouTube/{{channelName}}/{{title}}.md'.",
       )
       .addText((text) =>
         text.setValue(this.plugin.settings.pathTemplate).onChange(async (value) => {
