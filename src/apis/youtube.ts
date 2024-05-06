@@ -17,10 +17,7 @@ const baseUrlForChannels = 'https://www.googleapis.com/youtube/v3/channels?';
 export async function getVideoData(
   videoUrl: string,
   settings: YouTubeTemplatePluginSettings,
-  downloadThumbnail: boolean,
 ): Promise<VideoData> {
-  let thumbnailFileLink = '';
-
   try {
     const videoResponse: VideoListResponse = await requestUrl(
       baseUrlForVideos + `part=snippet,contentDetails&id=${parseVideoId(videoUrl)}&key=${settings.googleCloudApiKey}`,
@@ -40,15 +37,6 @@ export async function getVideoData(
 
     const thumbnailUrl = getBestThumbnailUrl(Object.values(videoResponse.items[0].snippet.thumbnails));
 
-    if (downloadThumbnail) {
-      thumbnailFileLink =
-        (await downloadVideoThumbnail(
-          this.app,
-          settings.createPaths,
-          Object.values(videoResponse.items[0].snippet.thumbnails),
-        )) ?? '';
-    }
-
     return {
       id: videoResponse.items[0].id,
       title: filterStringData(videoResponse.items[0].snippet.title),
@@ -57,7 +45,7 @@ export async function getVideoData(
       length: parseISODuration(videoResponse.items[0].contentDetails.duration),
       //@ts-ignore
       publishDate: moment(videoResponse.items[0].snippet.publishedAt).format('YYYY-MM-DD'),
-      thumbnail: thumbnailFileLink ?? '',
+      thumbnail: '',
       thumbnailUrl,
       chapters: parseChapters(videoResponse.items[0].snippet.description).map(
         (chapter) => `${chapter.timestamp} ${filterStringData(chapter.title)}`,
@@ -94,26 +82,31 @@ function getBestThumbnailUrl(availableThumbnails: Thumbnail[]): string {
 export async function downloadVideoThumbnail(
   app: App,
   createFolders: boolean,
-  availableThumbnails: Thumbnail[],
+  imageUrl: string,
+  title: string,
+  path: string,
 ): Promise<string | undefined> {
-  const imageUrl = getBestThumbnailUrl(availableThumbnails);
-  const response = await requestUrl(imageUrl);
-
-  const filename = `${new Date().getTime()}.${imageUrl.split('.').pop()}`;
-  const attachmentFolderPath = getAttachmentFolder(app);
-  const abstractFile = this.app.vault.getAbstractFileByPath(attachmentFolderPath);
-
-  if (!(abstractFile instanceof TFolder)) {
-    if (createFolders) {
-      await app.vault.createFolder(attachmentFolderPath);
-    } else {
-      throw new Error(
-        `Attachment folder '${attachmentFolderPath}' does not exist. Check if the folder path is correct in your Settings → Files and links → Default location for new attachments. Or you can turn on option 'Create folders' in the plugin settings.`,
-      );
+  const attachmentFolderPath = app.vault.getConfig('attachmentFolderPath');
+  const filename = `${title}.${imageUrl.split('.').pop()}`;
+  let fullpath;
+  if (attachmentFolderPath.startsWith('./') && attachmentFolderPath.length === 2) {
+    fullpath = `${path}/${filename}`;
+  } else {
+    const abstractFile = this.app.vault.getAbstractFileByPath(attachmentFolderPath);
+    if (!(abstractFile instanceof TFolder)) {
+      if (createFolders) {
+        await app.vault.createFolder(attachmentFolderPath);
+      } else {
+        throw new Error(
+          `Attachment folder '${attachmentFolderPath}' does not exist. Check if the folder path is correct in your Settings → Files and links → Default location for new attachments. Or you can turn on option 'Create folders' in the plugin settings.`,
+        );
+      }
     }
+    fullpath = `${app.vault.getConfig('attachmentFolderPath')}/${filename}`;
   }
 
-  await app.vault.createBinary(`${app.vault.getConfig('attachmentFolderPath')}/${filename}`, response.arrayBuffer);
+  const response = await requestUrl(imageUrl);
+  await app.vault.createBinary(fullpath, response.arrayBuffer);
 
   return filename;
 }

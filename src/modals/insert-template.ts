@@ -1,7 +1,7 @@
 import { App, Modal, Notice, Setting, TextComponent, normalizePath } from 'obsidian';
 import { findTFile } from 'src/utils/file';
 import { checkPathTemplate, filterFilename } from 'src/utils/parser';
-import { getVideoData } from '../apis/youtube';
+import { getVideoData, downloadVideoThumbnail } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
 import { NO_CHANNEL_ERROR, NO_INTERNET_ERROR, NO_VIDEO_ERROR, WRONG_API_KEY_ERROR } from '../utils/constants';
 import { processPathTemplate, processTemplate } from '../utils/templater';
@@ -25,16 +25,14 @@ export class InsertTemplateModal extends Modal {
 
     // Get the video data from youtube APIs
     try {
-      const downloadVideoThumbnail = this.plugin.settings.template.contains('{{thumbnail}}');
-
-      const data = await getVideoData(this.videoUrl, this.plugin.settings, downloadVideoThumbnail);
+      const data = await getVideoData(this.videoUrl, this.plugin.settings);
 
       if (!this.app.vault.getAbstractFileByPath(this.plugin.settings.folder)) {
         if (this.plugin.settings.createPaths) {
           await this.app.vault.createFolder(this.plugin.settings.folder);
+        } else {
+          throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
         }
-
-        throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
       }
 
       // Create a new file with the title of the video
@@ -56,6 +54,19 @@ export class InsertTemplateModal extends Modal {
         ) {
           await this.app.vault.createFolder(filepath.substring(0, filepath.lastIndexOf('/')));
         }
+
+        let thumbnailFileLink = '';
+        if (this.plugin.settings.template.contains('{{thumbnail}}')) {
+          thumbnailFileLink =
+            (await downloadVideoThumbnail(
+              this.app,
+              this.plugin.settings.createPaths,
+              data.thumbnailUrl,
+              filterFilename(data.title),
+              filepath.substring(0, filepath.lastIndexOf('/')),
+            )) ?? '';
+        }
+        data.thumbnail = thumbnailFileLink;
 
         const dataToWrite = await processTemplate(data, this.plugin.settings, this.app);
 
