@@ -57,21 +57,3 @@ export function filterFilename(text: string): string {
 export function filterStringData(text: string): string {
   return text.replace(/"(.*?)"/g, '«$1»').replace(/["]/g, '');
 }
-
-export function getAttachmentFolder(app: App): string {
-  const attachentPath = app.vault.getConfig('attachmentFolderPath');
-
-  if (attachentPath.startsWith('./')) {
-    if (attachentPath.length === 2) return '/';
-
-    const activeFile = app.workspace.getActiveFile();
-    if (!activeFile) throw new Error("No active file. Can't parse the path for the attachment folder.");
-
-    let parentFolder = activeFile?.parent?.path;
-    if (parentFolder?.startsWith('/')) parentFolder = parentFolder.substring(1);
-
-    return parentFolder + attachentPath.substring(2);
-  }
-
-  return attachentPath;
-}
