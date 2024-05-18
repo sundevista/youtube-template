@@ -1,7 +1,7 @@
 {
   "id": "youtube-template",
   "name": "YouTube Template",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "minAppVersion": "0.15.0",
   "description": "A plugin that would help you to fetch YouTube videos data into your vault.",
   "author": "sundevista",
