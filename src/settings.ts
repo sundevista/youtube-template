@@ -41,12 +41,15 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
-
+    
+    containerEl.createEl('h1', { text: 'YouTube Template Plugin Settings' });
+    
     new Setting(containerEl)
       .setName('Google Cloud API Key')
-      .setDesc(
-        "It's a secret API key that you can get from Google Cloud Console (https://console.cloud.google.com/apis/credentials)",
-      )
+      .setDesc(createFragment(doc => {
+        doc.createEl('span', { text: 'It\'s a secret API key that you can get from ' });
+        doc.createEl('a', { href: 'https://console.cloud.google.com/apis/credentials', text: 'Google Cloud Console' }).setAttr('target', '_blank');
+      }))
       .addText((text) =>
         text
           .setPlaceholder('Enter your API key')
@@ -55,7 +58,8 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
             this.plugin.settings.googleCloudApiKey = value;
             await this.plugin.saveSettings();
           }),
-      );
+      )
+      .setClass('youtube-template-plugin__wide-input');
 
     const rootFolder = this.app.vault.getAbstractFileByPath('/') as TFolder;
     const folders = getAllTFolders(rootFolder);
@@ -94,7 +98,8 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
           this.plugin.settings.pathTemplate = value;
           await this.plugin.saveSettings();
         }),
-      );
+      )
+      .setClass('youtube-template-plugin__wide-input');
 
     new Setting(containerEl)
       .setName('Create folders')
@@ -171,6 +176,7 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
           this.plugin.settings.templateFile = value;
           await this.plugin.saveSettings();
         }),
-      );
+      )
+      .setClass('youtube-template-plugin__wide-input');
   }
 }
