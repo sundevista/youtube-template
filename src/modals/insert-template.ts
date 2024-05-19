@@ -1,6 +1,6 @@
 import { App, Modal, Notice, Setting, TextComponent, normalizePath } from 'obsidian';
 import { findTFile } from 'src/utils/file';
-import { checkPathTemplate, filterFilename } from 'src/utils/parser';
+import { checkPathTemplate, sanitizeFilename } from 'src/utils/parser';
 import { getVideoData, downloadVideoThumbnail } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
 import { NO_CHANNEL_ERROR, NO_INTERNET_ERROR, NO_VIDEO_ERROR, WRONG_API_KEY_ERROR } from '../utils/constants';
@@ -41,7 +41,7 @@ export class InsertTemplateModal extends Modal {
         checkPathTemplate(this.plugin.settings.pathTemplate);
         filepath = normalizePath(processPathTemplate(data, this.plugin.settings));
       } else {
-        filepath = normalizePath(`${this.plugin.settings.folder}/${filterFilename(data.title)}.md`);
+        filepath = normalizePath(`${this.plugin.settings.folder}/${sanitizeFilename(data.title)}.md`);
       }
 
       // Check if the file already exists
@@ -62,7 +62,7 @@ export class InsertTemplateModal extends Modal {
               this.app,
               this.plugin.settings.createPaths,
               data.thumbnailUrl,
-              filterFilename(data.title),
+              sanitizeFilename(data.title),
               filepath.substring(0, filepath.lastIndexOf('/')),
             )) ?? '';
         }

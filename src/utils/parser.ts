@@ -1,4 +1,4 @@
-import { App, moment } from 'obsidian';
+import { moment } from 'obsidian';
 
 export function parseVideoId(url: string): string | null {
   const regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
@@ -50,8 +50,8 @@ export function parseISODuration(data: string): string {
   return `${duration.hours() > 0 ? duration.hours() + ':' : ''}${duration.minutes()}:${duration.seconds()}`;
 }
 
-export function filterFilename(text: string): string {
-  return text.replace(/[/\\?%*:|"<>]/g, '');
+export function sanitizeFilename(text: string): string {
+  return text.replace(/[/:*?"<>|#^[\\\]]/g, '');
 }
 
 export function filterStringData(text: string): string {

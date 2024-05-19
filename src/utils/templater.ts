@@ -2,7 +2,7 @@ import { App } from 'obsidian';
 import { YouTubeTemplatePluginSettings } from '../settings';
 import { VideoData } from '../types/video-data';
 import { findTFile } from './file';
-import { filterFilename } from './parser';
+import { sanitizeFilename } from './parser';
 
 function replaceAll(str: string, find: string, replace: string): string {
   return str.replace(new RegExp(find, 'g'), replace);
@@ -23,7 +23,7 @@ export function processPathTemplate(videoData: VideoData, settings: YouTubeTempl
   let template = settings.pathTemplate;
 
   Object.keys(videoData).forEach((key) => {
-    template = replaceAll(template, `{{${key}}}`, filterFilename(processTemplateKey(key, videoData, settings)));
+    template = replaceAll(template, `{{${key}}}`, sanitizeFilename(processTemplateKey(key, videoData, settings)));
   });
 
   return template;
