@@ -14,10 +14,7 @@ import {
 const baseUrlForVideos = 'https://www.googleapis.com/youtube/v3/videos?';
 const baseUrlForChannels = 'https://www.googleapis.com/youtube/v3/channels?';
 
-export async function getVideoData(
-  videoUrl: string,
-  settings: YouTubeTemplatePluginSettings,
-): Promise<VideoData> {
+export async function getVideoData(videoUrl: string, settings: YouTubeTemplatePluginSettings): Promise<VideoData> {
   try {
     const videoResponse: VideoListResponse = await requestUrl(
       baseUrlForVideos + `part=snippet,contentDetails&id=${parseVideoId(videoUrl)}&key=${settings.googleCloudApiKey}`,
@@ -53,7 +50,7 @@ export async function getVideoData(
       hashtags: videoResponse.items[0].snippet.tags ?? [],
       description: '',
       //@ts-ignore
-      noteCreated: moment().format('YYYY-MM-DD, HH:mm'),
+      noteCreated: moment().format('YYYY-MM-DD'),
       youtubeUrl: videoUrl,
     };
   } catch (error) {
