@@ -30,3 +30,14 @@
 	width: 100%;
 	height: 200px;
 }
+
+.youtube-template-plugin__wide-input {
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.youtube-template-plugin__wide-input .setting-item-control,
+.youtube-template-plugin__wide-input .setting-item-control input {
+  width: 100%;
+  min-width: 100%;
+}
