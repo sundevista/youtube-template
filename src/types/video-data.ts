@@ -11,5 +11,6 @@ export interface VideoData {
   thumbnailUrl: string;
   description: string;
   noteCreated: string;
+  noteCreatedDateTime: string;
   youtubeUrl: string;
 }

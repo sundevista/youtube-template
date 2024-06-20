@@ -25,6 +25,7 @@ hashtags: \n{{hashtags}}
 thumbnail: "![[{{thumbnail}}]]"
 description: "{{description}}"
 note_created: "{{noteCreated}}"
+note_modifiend: "{{noteCreatedDateTime}}"
 youtube_url: "{{youtubeUrl}}"
 template-type: "YouTube"
 template-version: "1.0"
