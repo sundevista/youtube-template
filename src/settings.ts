@@ -149,7 +149,7 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
         'Make the template that will be used to create the note. You can use the following variables: {{title}}, ' +
           '{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}} (to download thumbnail, ' +
           'file name will be returned), {{thumbnailUrl}} {{chapters}}, {{hashtags}}, ' +
-          '{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
+          '{{description}}, {{noteCreated}}, {{noteCreatedDateTime}}, {{youtubeUrl}}.',
       )
       .addTextArea((text) =>
         text.setValue(this.plugin.settings.template).onChange(async (value) => {
@@ -175,7 +175,7 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
         'File with template that will be used to create the note. You can use the following You can use the following variables: {{title}}, ' +
           '{{channelName}}, {{subscribers}}, {{length}}, {{publishDate}}, {{thumbnail}} (to download thumbnail, ' +
           'file name will be returned), {{thumbnailUrl}} {{chapters}}, {{hashtags}}, ' +
-          '{{description}}, {{noteCreated}}, {{youtubeUrl}}.',
+          '{{description}}, {{noteCreated}}, {{noteCreatedDateTime}}, {{youtubeUrl}}.',
       )
       .addText((text) =>
         text.setValue(this.plugin.settings.templateFile).onChange(async (value) => {
