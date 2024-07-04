@@ -1,5 +1,5 @@
 import { App, Modal, Notice, Setting, TextComponent, normalizePath } from 'obsidian';
-import { findTFile } from 'src/utils/file';
+import { findTFile, isFolderExists } from 'src/utils/file';
 import { checkPathTemplate, sanitizeFilename } from 'src/utils/parser';
 import { getVideoData, downloadVideoThumbnail } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
@@ -28,7 +28,7 @@ export class InsertTemplateModal extends Modal {
       const data = await getVideoData(this.videoUrl, this.plugin.settings);
 
       if (!this.app.vault.getAbstractFileByPath(this.plugin.settings.folder)) {
-        if (this.plugin.settings.createPaths) {
+        if (this.plugin.settings.createPaths && !isFolderExists(this.plugin.settings.folder, this.app)) {
           await this.app.vault.createFolder(this.plugin.settings.folder);
         } else {
           throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
@@ -48,11 +48,9 @@ export class InsertTemplateModal extends Modal {
       if (findTFile(filepath, this.app)) {
         new Notice(`File ${filepath} already exists`);
       } else {
-        if (
-          this.plugin.settings.usePathTemplate &&
-          !this.app.vault.getAbstractFileByPath(filepath.contains('/') ? filepath.substring(0, filepath.lastIndexOf('/')) : '/')
-        ) {
-          await this.app.vault.createFolder(filepath.substring(0, filepath.lastIndexOf('/')));
+        const folderPath = filepath.substring(0, filepath.lastIndexOf('/'));
+        if (this.plugin.settings.usePathTemplate && !isFolderExists(folderPath, this.app)) {
+          await this.app.vault.createFolder(folderPath);
         }
 
         let thumbnailFileLink = '';
@@ -82,6 +80,8 @@ export class InsertTemplateModal extends Modal {
 
       this.close();
     } catch (error) {
+      if (this.plugin.settings.debugMode) console.error(error, error?.message);
+
       switch (error?.message) {
         case NO_VIDEO_ERROR:
           this.setErrorMessage(this.contentEl, 'No video found with the given URL');
@@ -96,7 +96,7 @@ export class InsertTemplateModal extends Modal {
           this.setErrorMessage(this.contentEl, 'Please check the API key in the settings');
           break;
         default:
-          this.setErrorMessage(this.contentEl, `Unexpected error: ${error?.message}`);
+          this.setErrorMessage(this.contentEl, `Unexpected error: ${error?.message} `);
           break;
       }
     }
@@ -109,7 +109,7 @@ export class InsertTemplateModal extends Modal {
   };
 
   setErrorMessage = (contentEl: HTMLElement, message: string) => {
-    const errorContainer = contentEl.querySelector(`#${errorContainerId}`);
+    const errorContainer = contentEl.querySelector(`#${errorContainerId} `);
     if (errorContainer) {
       errorContainer.textContent = message;
     }

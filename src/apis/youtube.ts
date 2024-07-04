@@ -10,6 +10,7 @@ import {
   NO_VIDEO_ERROR,
   WRONG_API_KEY_ERROR,
 } from '../utils/constants';
+import { isFolderExists } from 'src/utils/file';
 
 const baseUrlForVideos = 'https://www.googleapis.com/youtube/v3/videos?';
 const baseUrlForChannels = 'https://www.googleapis.com/youtube/v3/channels?';
@@ -91,7 +92,7 @@ export async function downloadVideoThumbnail(
   } else {
     const abstractFile = this.app.vault.getAbstractFileByPath(attachmentFolderPath);
     if (!(abstractFile instanceof TFolder)) {
-      if (createFolders) {
+      if (createFolders && !isFolderExists(attachmentFolderPath, app)) {
         await app.vault.createFolder(attachmentFolderPath);
       } else {
         throw new Error(

@@ -20,3 +20,7 @@ export function getAllTFolders(element: TAbstractFile): TFolder[] {
 
   return folders;
 }
+
+export function isFolderExists(folder: string, app: App): boolean {
+  return !!app.vault.getAbstractFileByPath(folder);
+}

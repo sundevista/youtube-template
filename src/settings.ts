@@ -14,6 +14,7 @@ export interface YouTubeTemplatePluginSettings {
   pathTemplate: string;
   useTemplateFile: boolean;
   templateFile: string;
+  debugMode: boolean;
 }
 
 export const DEFAULT_SETTINGS: YouTubeTemplatePluginSettings = {
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: YouTubeTemplatePluginSettings = {
   pathTemplate: '',
   useTemplateFile: false,
   templateFile: '',
+  debugMode: false,
 };
 
 export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
@@ -41,15 +43,19 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
-    
+
     containerEl.createEl('h1', { text: 'YouTube Template Plugin Settings' });
-    
+
     new Setting(containerEl)
       .setName('Google Cloud API Key')
-      .setDesc(createFragment(doc => {
-        doc.createEl('span', { text: 'It\'s a secret API key that you can get from ' });
-        doc.createEl('a', { href: 'https://console.cloud.google.com/apis/credentials', text: 'Google Cloud Console' }).setAttr('target', '_blank');
-      }))
+      .setDesc(
+        createFragment((doc) => {
+          doc.createEl('span', { text: "It's a secret API key that you can get from " });
+          doc
+            .createEl('a', { href: 'https://console.cloud.google.com/apis/credentials', text: 'Google Cloud Console' })
+            .setAttr('target', '_blank');
+        }),
+      )
       .addText((text) =>
         text
           .setPlaceholder('Enter your API key')
@@ -178,5 +184,17 @@ export class YouTubeTemplatePluginSettingsTab extends PluginSettingTab {
         }),
       )
       .setClass('youtube-template-plugin__wide-input');
+
+    new Setting(containerEl)
+      .setName('Debug mode')
+      .setDesc(
+        'Turn on if you want to see the debug/error messages in the console. Helpful for troubleshooting and issue reporting.',
+      )
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.debugMode).onChange(async (value) => {
+          this.plugin.settings.debugMode = value;
+          await this.plugin.saveSettings();
+        }),
+      );
   }
 }
