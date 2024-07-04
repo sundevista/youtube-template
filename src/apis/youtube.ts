@@ -52,6 +52,7 @@ export async function getVideoData(videoUrl: string, settings: YouTubeTemplatePl
       description: '',
       //@ts-ignore
       noteCreated: moment().format('YYYY-MM-DD'),
+      //@ts-ignore
       noteCreatedDateTime: moment().format('YYYY-MM-DD HH:mm'),
       youtubeUrl: videoUrl,
     };
