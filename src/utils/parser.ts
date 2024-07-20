@@ -51,7 +51,7 @@ export function parseISODuration(data: string): string {
 }
 
 export function sanitizeFilename(text: string): string {
-  return text.replace(/[/:*?"<>|#^[\\\]]/g, '');
+  return text.replace(/[/:*?"<>#^[\\\]]/g, '');
 }
 
 export function filterStringData(text: string): string {

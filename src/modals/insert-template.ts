@@ -27,12 +27,14 @@ export class InsertTemplateModal extends Modal {
     try {
       const data = await getVideoData(this.videoUrl, this.plugin.settings);
 
-      if (!this.app.vault.getAbstractFileByPath(this.plugin.settings.folder)) {
-        if (this.plugin.settings.createPaths && !isFolderExists(this.plugin.settings.folder, this.app)) {
+      if (this.plugin.settings.createPaths && !isFolderExists(this.plugin.settings.folder, this.app)) {
+        try {
           await this.app.vault.createFolder(this.plugin.settings.folder);
-        } else {
-          throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
+        } catch (err) {
+          console.warn('Folder already exists');
         }
+      } else {
+        throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
       }
 
       // Create a new file with the title of the video
