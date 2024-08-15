@@ -1,6 +1,6 @@
 {
   "name": "youtube-templater",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Helps to fetch youtube videos into your vault.",
   "main": "main.js",
   "scripts": {
