@@ -4,7 +4,7 @@ import { checkPathTemplate, sanitizeFilename } from 'src/utils/parser';
 import { getVideoData, downloadVideoThumbnail } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
 import { NO_CHANNEL_ERROR, NO_INTERNET_ERROR, NO_VIDEO_ERROR, WRONG_API_KEY_ERROR } from '../utils/constants';
-import { processPathTemplate, processTemplate } from '../utils/templater';
+import { getTemplate, processPathTemplate, processTemplate } from '../utils/templater';
 
 const errorContainerId = 'insert-template-modal__error';
 
@@ -54,7 +54,8 @@ export class InsertTemplateModal extends Modal {
         }
 
         let thumbnailFileLink = '';
-        if (this.plugin.settings.template.contains('{{thumbnail}}')) {
+        let template = getTemplate(this.plugin.settings, this.app);
+        if (template.contains('{{thumbnail}}')) {
           thumbnailFileLink =
             (await downloadVideoThumbnail(
               this.app,

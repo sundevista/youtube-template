@@ -29,7 +29,7 @@ export function processPathTemplate(videoData: VideoData, settings: YouTubeTempl
   return template;
 }
 
-export async function processTemplate(videoData: VideoData, settings: YouTubeTemplatePluginSettings, app: App): Promise<string> {
+export function getTemplate(settings: YouTubeTemplatePluginSettings, app: App): string {
   let template: string;
 
   if (settings.useTemplateFile) {
@@ -41,6 +41,14 @@ export async function processTemplate(videoData: VideoData, settings: YouTubeTem
   } else {
     template = settings.template;
   }
+
+  return template;
+}
+
+export async function processTemplate(videoData: VideoData, settings: YouTubeTemplatePluginSettings, app: App): Promise<string> {
+  let template: string;
+
+  template = getTemplate(settings, app);
 
   Object.keys(videoData).forEach((key) => {
     template = replaceAll(template, `{{${key}}}`, processTemplateKey(key, videoData, settings));
