@@ -54,7 +54,8 @@ export class InsertTemplateModal extends Modal {
         }
 
         let thumbnailFileLink = '';
-        let template = getTemplate(this.plugin.settings, this.app);
+        const template = await getTemplate(this.plugin.settings, this.app);
+
         if (template.contains('{{thumbnail}}')) {
           thumbnailFileLink =
             (await downloadVideoThumbnail(
@@ -65,6 +66,7 @@ export class InsertTemplateModal extends Modal {
               filepath.substring(0, filepath.lastIndexOf('/')),
             )) ?? '';
         }
+
         data.thumbnail = thumbnailFileLink;
 
         const dataToWrite = await processTemplate(data, this.plugin.settings, this.app);
