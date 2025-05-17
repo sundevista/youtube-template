@@ -1,11 +1,3 @@
-# Boilerplate semantic-release configuration for an Obsidian plugin
-# run semantic-release as follows to release a new version of your plugin:
-#   dry-run (default):  npx -p github:brianrodri/semantic-release-obsidian-plugin semantic-release
-#   for real: npx -p github:brianrodri/semantic-release-obsidian-plugin semantic-release --dry-run false
-# If `package.json` has a `repository` key configured, but you want to work on, say, a fork or development version on your own
-# repository / user, you might have to specify the `repositoryUrl`:
-# - either as a command-line argument (e.g. -r <url>) or by uncommenting and modifying the following line:
-# repositoryUrl: https://github.com/<user>/<repository>
 branches:
     - main
     - master
@@ -19,5 +11,3 @@ plugins:
             - path: manifest.json
             - path: styles.css
 tagFormat: '${version}'
-ci: false
-dryRun: true
