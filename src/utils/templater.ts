@@ -21,9 +21,11 @@ function processTemplateKey(key: string, videoData: VideoData, settings: YouTube
 export function processPathTemplate(videoData: VideoData, settings: YouTubeTemplatePluginSettings): string {
 	let template = settings.pathTemplate;
 
-	Object.keys(videoData).forEach((key) => {
-		template = replaceAll(template, `{{${key}}}`, sanitizeFilename(processTemplateKey(key, videoData, settings)));
-	});
+	Object.keys(videoData)
+		.filter((key) => template.includes(`{{${key}}}`))
+		.forEach((key) => {
+			template = replaceAll(template, `{{${key}}}`, sanitizeFilename(processTemplateKey(key, videoData, settings)));
+		});
 
 	return template;
 }

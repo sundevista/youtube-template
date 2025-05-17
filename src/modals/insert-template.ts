@@ -1,5 +1,5 @@
 import { App, Modal, Notice, Setting, TextComponent, normalizePath } from 'obsidian';
-import { findTFile, isFolderExists, sanitizeFilename } from 'src/utils/file';
+import { findTFile, getAvailablePath, isFolderExists, sanitizeFilename } from 'src/utils/file';
 import { checkPathTemplate } from 'src/utils/parser';
 import { getVideoData, downloadVideoThumbnail } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
@@ -43,6 +43,8 @@ export class InsertTemplateModal extends Modal {
 			} else {
 				filepath = normalizePath(`${this.plugin.settings.folder}/${sanitizeFilename(data.title)}.md`);
 			}
+
+			if (this.plugin.settings.allowDuplicates) filepath = getAvailablePath(filepath, this.app);
 
 			// Check if the file already exists
 			if (findTFile(filepath, this.app)) {
