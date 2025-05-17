@@ -1,11 +1,11 @@
 {
-  "id": "youtube-template",
-  "name": "YouTube Template",
-  "version": "1.1.9",
-  "minAppVersion": "0.15.0",
-  "description": "A plugin that would help you to fetch YouTube videos data into your vault.",
-  "author": "sundevista",
-  "authorUrl": "https://github.com/sundevista",
-  "isDesktopOnly": false,
-  "fundingUrl": "https://www.buymeacoffee.com/sundevistax"
+	"id": "youtube-template",
+	"name": "YouTube Template",
+	"version": "1.1.10",
+	"minAppVersion": "0.15.0",
+	"description": "A plugin that would help you to fetch YouTube videos data into your vault.",
+	"author": "sundevista",
+	"authorUrl": "https://github.com/sundevista",
+	"isDesktopOnly": false,
+	"fundingUrl": "https://www.buymeacoffee.com/sundevistax"
 }
