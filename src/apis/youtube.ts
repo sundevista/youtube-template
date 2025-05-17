@@ -36,6 +36,8 @@ export async function getVideoData(videoUrl: string, settings: YouTubeTemplatePl
 
 		const thumbnailUrl = getBestThumbnailUrl(Object.values(videoResponse.items[0].snippet.thumbnails));
 
+		console.log(videoResponse);
+
 		return {
 			id: videoResponse.items[0].id,
 			title: filterStringData(videoResponse.items[0].snippet.title),
@@ -50,7 +52,7 @@ export async function getVideoData(videoUrl: string, settings: YouTubeTemplatePl
 				(chapter) => `${chapter.timestamp} ${filterStringData(chapter.title)}`,
 			),
 			hashtags: videoResponse.items[0].snippet.tags ?? [],
-			description: '',
+			description: videoResponse.items[0].snippet.description,
 			//@ts-ignore
 			noteCreated: moment().format('YYYY-MM-DD'),
 			//@ts-ignore
