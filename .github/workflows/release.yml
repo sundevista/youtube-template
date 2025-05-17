@@ -1,0 +1,33 @@
+name: Release plugin version
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read # for checkout
+
+jobs:
+    release:
+        name: Release
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # to be able to publish a GitHub release
+            issues: write # to be able to comment on released issues
+            pull-requests: write # to be able to comment on released pull requests
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+            - name: Install dependencies
+              run: npm clean-install
+              env:
+                  HUSKY: 0
+            - name: Build plugin
+              run: npm run build
+            - name: Release update
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+              run: npx -p github:brianrodri/semantic-release-obsidian-plugin semantic-release
