@@ -5,6 +5,7 @@ import { getVideoData, downloadVideoThumbnail } from '../apis/youtube';
 import YoutubeTemplatePlugin from '../main';
 import { NO_CHANNEL_ERROR, NO_INTERNET_ERROR, NO_VIDEO_ERROR, WRONG_API_KEY_ERROR } from '../utils/constants';
 import { getTemplate, processPathTemplate, processTemplate } from '../utils/templater';
+import { insertTemplate } from 'src/actions/insert-action';
 
 const errorContainerId = 'insert-template-modal__error';
 
@@ -23,66 +24,8 @@ export class InsertTemplateModal extends Modal {
 			return;
 		}
 
-		// Get the video data from youtube APIs
 		try {
-			const data = await getVideoData(this.videoUrl, this.plugin.settings);
-
-			if (!this.app.vault.getAbstractFileByPath(this.plugin.settings.folder)) {
-				if (this.plugin.settings.createPaths && !isFolderExists(this.plugin.settings.folder, this.app)) {
-					await this.app.vault.createFolder(this.plugin.settings.folder);
-				} else {
-					throw new Error(`Folder '${this.plugin.settings.folder}' does not exist`);
-				}
-			}
-
-			// Create a new file with the title of the video
-			let filepath;
-			if (this.plugin.settings.usePathTemplate) {
-				checkPathTemplate(this.plugin.settings.pathTemplate);
-				filepath = normalizePath(processPathTemplate(data, this.plugin.settings));
-			} else {
-				filepath = normalizePath(`${this.plugin.settings.folder}/${sanitizeFilename(data.title)}.md`);
-			}
-
-			if (this.plugin.settings.allowDuplicates) filepath = getAvailablePath(filepath, this.app);
-
-			// Check if the file already exists
-			if (findTFile(filepath, this.app)) {
-				new Notice(`File ${filepath} already exists`);
-			} else {
-				const folderPath = filepath.substring(0, filepath.lastIndexOf('/'));
-				if (this.plugin.settings.usePathTemplate && !isFolderExists(folderPath, this.app)) {
-					await this.app.vault.createFolder(folderPath);
-				}
-
-				let thumbnailFileLink = '';
-				const template = await getTemplate(this.plugin.settings, this.app);
-
-				if (template.contains('{{thumbnail}}')) {
-					thumbnailFileLink =
-						(await downloadVideoThumbnail(
-							this.app,
-							this.plugin.settings.createPaths,
-							data.thumbnailUrl,
-							sanitizeFilename(data.title),
-							filepath.substring(0, filepath.lastIndexOf('/')),
-						)) ?? '';
-				}
-
-				data.thumbnail = thumbnailFileLink;
-
-				const dataToWrite = await processTemplate(data, this.plugin.settings, this.app);
-
-				await this.app.vault.create(filepath, dataToWrite);
-
-				const abstractFile = findTFile(filepath, this.app);
-				if (abstractFile) {
-					this.app.workspace.getLeaf().openFile(abstractFile);
-				} else {
-					new Notice(`Failed to create ${filepath}`);
-				}
-			}
-
+			await insertTemplate(this.videoUrl, this.app, this.plugin);
 			this.close();
 		} catch (error) {
 			if (this.plugin.settings.debugMode) console.error(error, error?.message);
