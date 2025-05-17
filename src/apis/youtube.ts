@@ -52,7 +52,7 @@ export async function getVideoData(videoUrl: string, settings: YouTubeTemplatePl
 				(chapter) => `${chapter.timestamp} ${filterStringData(chapter.title)}`,
 			),
 			hashtags: videoResponse.items[0].snippet.tags ?? [],
-			description: videoResponse.items[0].snippet.description,
+			description: (videoResponse.items[0].snippet.description || '').replace(/\s+/g, ' '),
 			//@ts-ignore
 			noteCreated: moment().format('YYYY-MM-DD'),
 			//@ts-ignore
