@@ -47,7 +47,9 @@ export function parseChapters(description: string): {
 
 export function parseISODuration(data: string): string {
 	const duration = moment.duration(data);
-	return `${duration.hours() > 0 ? duration.hours() + ':' : ''}${duration.minutes()}:${duration.seconds()}`;
+	return `${duration.hours() > 0 ? duration.hours() + ':' : ''}${
+		duration.minutes() > 9 ? duration.minutes() : `0${duration.minutes()}`
+	}:${duration.seconds() > 9 ? duration.seconds() : `0${duration.seconds()}`}`;
 }
 
 export function filterStringData(text: string): string {
