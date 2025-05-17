@@ -36,8 +36,6 @@ export async function getVideoData(videoUrl: string, settings: YouTubeTemplatePl
 
 		const thumbnailUrl = getBestThumbnailUrl(Object.values(videoResponse.items[0].snippet.thumbnails));
 
-		console.log(videoResponse);
-
 		return {
 			id: videoResponse.items[0].id,
 			title: filterStringData(videoResponse.items[0].snippet.title),
